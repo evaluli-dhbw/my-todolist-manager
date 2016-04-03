@@ -8,7 +8,7 @@ const router = require('./router');
 const mongoose = require('mongoose');
 
 // DB Setup
-mongoose.connect('mongodb://localhost:auth/my-todolist-manager');
+mongoose.connect('mongodb://localhost/my-todolist-manager');
 
 // App Setup
 app.use(morgan('combined'));
