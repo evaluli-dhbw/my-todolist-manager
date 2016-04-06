@@ -2,17 +2,18 @@ const jwt = require('jwt-simple');
 const User = require('../models/users');
 const config = require('../config');
 
-function tokenForUser(user) {
+function generateTokenForUser(user) {
 	const timestamp = new Date().getTime();
 	return jwt.encode({ sub: user.id, iat: timestamp }, config.secret);
 }
 
-exports.signin = function(req, res, next) {
+const signin = function(req, res, next) {
 	// User has already had their email and password auth'd
 	// We just need to give them a token
-	res.send({ token: tokenForUser(req.user) });
+	res.send({ token: generateTokenForUser(req.user) });
 }
-exports.signup = function(req, res, next) {
+
+const signup = function(req, res, next) {
 	const email = req.body.email;
 	const password = req.body.password;
 
@@ -26,7 +27,7 @@ exports.signup = function(req, res, next) {
 
 		// If a user with email does exist, return an error
 		if (existingUser) {
-			return res.status(422).send({ error: 'Email is in use.' });
+			return res.status(422).send({ error: 'Email is already in use.' });
 		}
 
 		// If a user with email does NOT exist, create and save user record
@@ -39,8 +40,10 @@ exports.signup = function(req, res, next) {
 			if (err) { return next (err); }
 
 			// Respond to request indicating the user was created
-			res.json({ token: tokenForUser(user) });
+			res.json({ token: generateTokenForUser(user) });
 		});
-
-	})
+	});
 }
+
+exports.signin = signin;
+exports.signup = signup;
